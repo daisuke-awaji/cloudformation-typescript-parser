@@ -1,9 +1,15 @@
 {
   "name": "cloudformation-typescript-parser",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "lib/types/index.d.ts",
+  "description": "Parse CloudFormation template into TypeScript.",
+  "author": "Daisuke Awaji <gee.awa@gmail.com> (https://github.com/daisuke-awaji)",
+  "homepage": "https://github.com/daisuke-awaji/cloudformation-typescript-parser",
   "license": "MIT",
   "scripts": {
+    "prepare": "tsc",
+    "build": "rm -rf ./dist && rm -rf ./lib && tsc",
     "test": "jest",
     "test:watch": "jest --watchAll"
   },
@@ -17,5 +23,11 @@
     "cloudform-types": "^7.3.0",
     "find-and-replace-anything": "^2.2.2",
     "yaml-cfn": "^0.3.1"
-  }
+  },
+  "keywords": [
+    "cloudforamtion",
+    "cfn",
+    "typescript",
+    "parser"
+  ]
 }

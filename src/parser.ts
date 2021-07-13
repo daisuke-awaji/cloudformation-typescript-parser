@@ -45,6 +45,7 @@ export const parse = (template: Template) => {
 
   function filterFindInMap(foundVal) {
     if (foundVal.hasOwnProperty("Fn::FindInMap")) {
+      console.log(foundVal);
       const [mapping, key, name] = foundVal["Fn::FindInMap"].map((item) =>
         findAndReplaceIf(item, filterRef)
       );
@@ -55,8 +56,22 @@ export const parse = (template: Template) => {
     return foundVal;
   }
 
+  function arrayProps(foundVal) {
+    if (Array.isArray(foundVal)) {
+      return foundVal.map((item) => {
+        let result = item;
+        result = findAndReplaceIf(result, filterRef);
+        result = findAndReplaceIf(result, filterSub);
+        result = findAndReplaceIf(result, filterFindInMap);
+        return result;
+      });
+    }
+    return foundVal;
+  }
+
   template = findAndReplaceIf(template, filterRef);
   template = findAndReplaceIf(template, filterSub);
   template = findAndReplaceIf(template, filterFindInMap);
+  template = findAndReplaceIf(template, arrayProps);
   return template;
 };

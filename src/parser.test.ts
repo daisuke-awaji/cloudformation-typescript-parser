@@ -1,11 +1,14 @@
-import { parseCfnFile } from "./index";
+import { readCfnFile } from "./reader";
 import path from "path";
+import { parse } from "./parser";
 
-describe("index", () => {
+describe("parse", () => {
   test("Replace Valiables: Ref, Sub, FindInMap", async () => {
-    const parced = await parseCfnFile(
+    const template = await readCfnFile(
       path.join(__dirname, "../sample/apigateway.yaml")
     );
+
+    const parced = parse(template);
 
     expect(JSON.stringify(parced)).not.toContain("Ref");
     expect(JSON.stringify(parced)).not.toContain("Sub");
@@ -85,65 +88,6 @@ describe("index", () => {
           Description: "API Endpoint",
           Value:
             "https://ApiGateway.execute-api.ap-northeast-1.amazonaws.com/v1",
-        },
-      },
-    });
-  });
-  test.only("parse array properties security-group.yml", async () => {
-    const template = await parseCfnFile(
-      path.join(__dirname, "../sample/security-group.yaml")
-    );
-
-    expect(JSON.stringify(template)).not.toContain("Ref");
-    expect(JSON.stringify(template)).not.toContain("Sub");
-    expect(JSON.stringify(template)).not.toContain("FindInMap");
-    expect(template).toMatchObject({
-      AWSTemplateFormatVersion: "2010-09-09",
-      Parameters: {
-        VpcId: {
-          Type: "AWS::EC2::VPC::Id",
-        },
-        Env: {
-          Type: "String",
-          AllowedValues: ["prod", "stg", "test"],
-          Default: "test",
-        },
-      },
-      Mappings: {
-        EnvMap: {
-          prod: {
-            cidr: "0.0.0.1/0",
-          },
-          stg: {
-            cidr: "0.0.0.2/0",
-          },
-          test: {
-            cidr: "0.0.0.3/0",
-          },
-        },
-      },
-      Resources: {
-        SecurityGroupEc2: {
-          Type: "AWS::EC2::SecurityGroup",
-          Properties: {
-            GroupName: "test-ec2-sg",
-            GroupDescription: "for alb",
-            SecurityGroupIngress: [
-              {
-                IpProtocol: "tcp",
-                FromPort: 80,
-                ToPort: 80,
-                CidrIp: "0.0.0.3/0",
-              },
-            ],
-            VpcId: "DEFAULT",
-            Tags: [
-              {
-                Key: "Name",
-                Value: "test-ec2-sg",
-              },
-            ],
-          },
         },
       },
     });

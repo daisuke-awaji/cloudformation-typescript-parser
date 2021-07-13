@@ -9,6 +9,7 @@ describe("parse", () => {
     );
 
     const parced = parse(template);
+
     expect(JSON.stringify(parced)).not.toContain("Ref");
     expect(JSON.stringify(parced)).not.toContain("Sub");
     expect(JSON.stringify(parced)).not.toContain("FindInMap");

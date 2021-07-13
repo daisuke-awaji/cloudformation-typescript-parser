@@ -1,0 +1,62 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  API Gateway
+
+Mappings:
+  NLB:
+    prod:
+      v1: http://prod-nlb.com
+    stg:
+      v1: http://stg-nlb.com
+    test:
+      v1: http://test-nlb.com
+  VPCLink:
+    prod:
+      v1: prod-link
+    stg:
+      v1: stg-link
+    test:
+      v1: test-link
+
+Parameters:
+  Env:
+    Type: String
+    AllowedValues:
+      - prod
+      - stg
+      - test
+    Default: test
+
+  Stage:
+    Type: String
+    AllowedValues:
+      - v1
+      - v2
+    Default: v1
+
+Resources:
+  ApiGateway:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: !Sub ${Env}-api-${Stage}
+      StageName: !Ref Stage
+      DefinitionUri: "../apigw.yml"
+      EndpointConfiguration: REGIONAL
+      MethodSettings:
+        - DataTraceEnabled: true
+          LoggingLevel: "INFO"
+          ResourcePath: "/*"
+          HttpMethod: "*"
+      Variables:
+        nlb: !FindInMap [NLB, !Ref Env, !Ref Stage]
+        vpcLinkId: !FindInMap [VPCLink, !Ref Env, !Ref Stage]
+      MinimumCompressionSize: 1000
+      AccessLogSetting:
+        DestinationArn: !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:API-Gateway-Access-Logs_${ApiGateway}/${Stage}
+        Format: '{ "requestId":"$context.requestId", "ip": "$context.identity.sourceIp", "caller":"$context.identity.caller", "user":"$context.identity.user","requestTime":"$context.requestTime", "httpMethod":"$context.httpMethod","resourcePath":"$context.resourcePath", "status":"$context.status","protocol":"$context.protocol", "responseLength":"$context.responseLength" }'
+
+Outputs:
+  ApiGateway:
+    Description: API Endpoint
+    Value: !Sub "https://${ApiGateway}.execute-api.${AWS::Region}.amazonaws.com/${Stage}"

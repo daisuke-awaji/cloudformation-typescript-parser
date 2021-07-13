@@ -1,0 +1,21 @@
+{
+  "name": "cloudformation-typescript-parser",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watchAll"
+  },
+  "devDependencies": {
+    "@types/jest": "^26.0.24",
+    "jest": "^27.0.6",
+    "ts-jest": "^27.0.3",
+    "typescript": "^4.3.5"
+  },
+  "dependencies": {
+    "cloudform-types": "^7.3.0",
+    "find-and-replace-anything": "^2.2.2",
+    "yaml-cfn": "^0.3.1"
+  }
+}

@@ -886,10 +886,10 @@ cliui@^7.0.2:
     strip-ansi "^6.0.0"
     wrap-ansi "^7.0.0"
 
-cloudform-types@^7.3.0:
-  version "7.3.0"
-  resolved "https://registry.yarnpkg.com/cloudform-types/-/cloudform-types-7.3.0.tgz#0b0cc3d2b20672629fd7b6b8a2d768a2a6167e8a"
-  integrity sha512-DovkhcKCqewvuduVGK9/KKVD9AYS9nCE7izmBgM1qvqaNgwhCkSLkz7UCyaEpi5aGgCE+YNs/qkZIz2CPx6aMQ==
+cloudform-types@6.3.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/cloudform-types/-/cloudform-types-5.0.0.tgz#2e2176d37dab64fe21af910e28159f0712afa2b2"
+  integrity sha512-WlNYoV4lPxIdOEM2eJjxPGb5FkYS3aR9WJYIygjqArf841FmLT+xqOpM0B0coA/4QqGk5QDgg0eIaGlR1PgjoA==
 
 co@^4.6.0:
   version "4.6.0"

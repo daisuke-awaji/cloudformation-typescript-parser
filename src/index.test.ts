@@ -89,7 +89,7 @@ describe("index", () => {
       },
     });
   });
-  test.only("parse array properties security-group.yml", async () => {
+  test("parse array properties security-group.yml", async () => {
     const template = await parseCfnFile(
       path.join(__dirname, "../sample/security-group.yaml")
     );
@@ -141,6 +141,70 @@ describe("index", () => {
               {
                 Key: "Name",
                 Value: "test-ec2-sg",
+              },
+            ],
+          },
+        },
+      },
+    });
+  });
+
+  test.only("parse sub array", async () => {
+    const template = await parseCfnFile(
+      path.join(__dirname, "../sample/array-sub.yaml")
+    );
+
+    expect(JSON.stringify(template)).not.toContain("Ref");
+    expect(JSON.stringify(template)).not.toContain("Sub");
+    expect(JSON.stringify(template)).not.toContain("FindInMap");
+
+    expect(template).toMatchObject({
+      AWSTemplateFormatVersion: "2010-09-09",
+      Parameters: {
+        VpcId: {
+          Type: "AWS::EC2::VPC::Id",
+        },
+        Env: {
+          Type: "String",
+          AllowedValues: ["prod", "stg", "test"],
+          Default: "test",
+        },
+      },
+      Mappings: {
+        EnvMap: {
+          prod: {
+            cidr: "0.0.0.1/0",
+            suf: "prod",
+          },
+          stg: {
+            cidr: "0.0.0.2/0",
+            suf: "stg",
+          },
+          test: {
+            cidr: "0.0.0.3/0",
+            suf: "test",
+          },
+        },
+      },
+      Resources: {
+        SecurityGroupEc2: {
+          Type: "AWS::EC2::SecurityGroup",
+          Properties: {
+            GroupName: "test-ec2-sg",
+            GroupDescription: "for alb",
+            SecurityGroupIngress: [
+              {
+                IpProtocol: "tcp",
+                FromPort: 80,
+                ToPort: 80,
+                CidrIp: "0.0.0.3/0",
+              },
+            ],
+            VpcId: "DEFAULT",
+            Tags: [
+              {
+                Key: "Name",
+                Value: "test-ec2-sg-test",
               },
             ],
           },

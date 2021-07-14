@@ -1,0 +1,43 @@
+---
+AWSTemplateFormatVersion: "2010-09-09"
+
+Parameters:
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+  Env:
+    Type: String
+    AllowedValues:
+      - prod
+      - stg
+      - test
+    Default: test
+
+Mappings:
+  EnvMap:
+    prod:
+      cidr: "0.0.0.1/0"
+      suf: prod
+    stg:
+      cidr: "0.0.0.2/0"
+      suf: stg
+    test:
+      cidr: "0.0.0.3/0"
+      suf: test
+
+Resources:
+  SecurityGroupEc2:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: !Sub "${Env}-ec2-sg"
+      GroupDescription: for alb
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: !FindInMap [EnvMap, !Ref Env, cidr]
+      VpcId: !Ref VpcId
+      Tags:
+        - Key: Name
+          Value: !Sub
+            - "${Env}-ec2-sg-${AAA}"
+            - AAA: !FindInMap [EnvMap, !Ref Env, suf]

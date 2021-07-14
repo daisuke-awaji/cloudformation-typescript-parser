@@ -1,6 +1,6 @@
 {
   "name": "cloudformation-typescript-parser",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "dist/index.js",
   "types": "lib/types/index.d.ts",
   "description": "Parse CloudFormation template into TypeScript.",
@@ -20,7 +20,7 @@
     "typescript": "^4.3.5"
   },
   "dependencies": {
-    "cloudform-types": "^7.3.0",
+    "cloudform-types": "6.3.0",
     "find-and-replace-anything": "^2.2.2",
     "yaml-cfn": "^0.3.1"
   },

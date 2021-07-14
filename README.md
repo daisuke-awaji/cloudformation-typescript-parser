@@ -31,6 +31,8 @@ yarn add cloudformation-typescript-parser
 Read and parse CloudFormation Template
 
 ```ts
+import { parseCfnFile } from "cloudformation-typescript-parser";
+
 const template = await parseCfnFile(path.join(__dirname, "./cfn/tmeplate.yaml");
 ```
 

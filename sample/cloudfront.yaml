@@ -1,0 +1,84 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Parameters:
+  Env:
+    Type: String
+    AllowedValues:
+      - prod
+      - test
+    Default: test
+Mappings:
+  CloudFront:
+    Alias:
+      prod: a.com
+      test: b.com
+    AcmCertificateArn:
+      prod: arn
+      test: arn
+Resources:
+  S3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      AccessControl: PublicRead
+      BucketName: !Sub ${Env}-bucket
+      WebsiteConfiguration:
+        IndexDocument: spec.html
+        ErrorDocument: error.html
+
+  BucketPolicy:
+    Type: "AWS::S3::BucketPolicy"
+    Properties:
+      Bucket: !Ref S3Bucket
+      PolicyDocument:
+        Statement:
+          - Action:
+              - "s3:GetObject"
+            Effect: "Allow"
+            Resource: !Sub "arn:aws:s3:::${S3Bucket}/*"
+            Principal:
+              CanonicalUser: !GetAtt CloudFrontOriginAccessIdentity.S3CanonicalUserId
+
+  CloudFrontOriginAccessIdentity:
+    Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
+    Properties:
+      CloudFrontOriginAccessIdentityConfig:
+        Comment: "access identity"
+
+  CloudFrontDistribution:
+    Type: AWS::CloudFront::Distribution
+    DependsOn:
+      - CloudFrontOriginAccessIdentity
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        Aliases:
+          - !FindInMap [CloudFront, Alias, !Ref Env]
+        ViewerCertificate:
+          AcmCertificateArn:
+            !FindInMap [CloudFront, AcmCertificateArn, !Ref Env]
+          SslSupportMethod: sni-only
+        DefaultCacheBehavior:
+          AllowedMethods:
+            - HEAD
+            - GET
+          CachedMethods:
+            - HEAD
+            - GET
+          DefaultTTL: 0
+          MaxTTL: 0
+          MinTTL: 0
+          TargetOriginId: !Sub ${Env}-bucket-Origin
+          ViewerProtocolPolicy: redirect-to-https
+          ForwardedValues:
+            QueryString: false
+        IPV6Enabled: true
+        HttpVersion: http2
+        DefaultRootObject: spec.html
+        Origins:
+          - Id: !Sub ${Env}-bucket-Origin
+            DomainName: !GetAtt S3Bucket.DomainName
+            S3OriginConfig:
+              OriginAccessIdentity: !Sub "origin-access-identity/cloudfront/${CloudFrontOriginAccessIdentity}"
+        CustomErrorResponses:
+          - ErrorCachingMinTTL: 0
+            ErrorCode: 403

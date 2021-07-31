@@ -1,5 +1,5 @@
 ---
-AWSTemplateFormatVersion: "2010-09-09"
+AWSTemplateFormatVersion: '2010-09-09'
 
 Parameters:
   VpcId:
@@ -15,17 +15,17 @@ Parameters:
 Mappings:
   EnvMap:
     prod:
-      cidr: "0.0.0.1/0"
+      cidr: '0.0.0.1/0'
     stg:
-      cidr: "0.0.0.2/0"
+      cidr: '0.0.0.2/0'
     test:
-      cidr: "0.0.0.3/0"
+      cidr: '0.0.0.3/0'
 
 Resources:
   SecurityGroupEc2:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupName: !Sub "${Env}-ec2-sg"
+      GroupName: !Sub '${Env}-ec2-sg'
       GroupDescription: for alb
       SecurityGroupIngress:
         - IpProtocol: tcp
@@ -35,4 +35,4 @@ Resources:
       VpcId: !Ref VpcId
       Tags:
         - Key: Name
-          Value: !Sub "${Env}-ec2-sg"
+          Value: !Sub '${Env}-ec2-sg'

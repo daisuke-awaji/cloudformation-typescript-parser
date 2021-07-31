@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "cloudform-types": "5.0.2",
+    "file-type": "^16.5.2",
     "find-and-replace-anything": "^2.2.2",
     "yaml-cfn": "^0.3.1"
   },

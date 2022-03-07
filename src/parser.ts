@@ -68,7 +68,7 @@ export const parse = (template: Template) => {
   function filterFindInMap(val) {
     if (val.hasOwnProperty("Fn::FindInMap")) {
       const [mapping, key, name] = val["Fn::FindInMap"].map((item) =>
-        findAndReplaceIf(item, filterRef)
+        replaceRecursively(item)
       );
 
       return template.Mappings![mapping][key][name];

@@ -217,4 +217,76 @@ describe("parse", () => {
       },
     });
   });
+
+  test("Replace Valiables: Ref, Sub, nested FindInMap", async () => {
+    const template = await readCfnFile(
+      path.join(__dirname, "../sample/nested-mapping.yaml")
+    );
+
+    const parced = parse(template);
+
+    expect(JSON.stringify(parced)).not.toContain("Ref");
+    expect(JSON.stringify(parced)).not.toContain("Sub");
+    expect(JSON.stringify(parced)).not.toContain("FindInMap");
+    expect(parced).toMatchObject({
+      AWSTemplateFormatVersion: "2010-09-09",
+      Parameters: {
+        VpcId: {
+          Type: "AWS::EC2::VPC::Id",
+        },
+        Env: {
+          Type: "String",
+          AllowedValues: ["prod", "stg", "test"],
+          Default: "test",
+        },
+      },
+      Mappings: {
+        EnvMap: {
+          prod: {
+            cidr: "0.0.0.1/0",
+            suf: "prod",
+          },
+          dev: {
+            cidr: "0.0.0.2/0",
+            suf: "test",
+          },
+        },
+        EnvTypeMap: {
+          prod: {
+            type: "prod",
+          },
+          stg: {
+            type: "dev",
+          },
+          test: {
+            type: "dev",
+          },
+        },
+      },
+      Resources: {
+        SecurityGroupEc2: {
+          Type: "AWS::EC2::SecurityGroup",
+          Properties: {
+            GroupName: "test-ec2-sg",
+            GroupDescription: "for alb",
+            SecurityGroupIngress: [
+              {
+                IpProtocol: "tcp",
+                FromPort: 80,
+                ToPort: 80,
+                CidrIp: "0.0.0.2/0",
+              },
+            ],
+            VpcId: "DEFAULT",
+            Tags: [
+              {
+                Key: "Name",
+                Value: "test-ec2-sg-test",
+              },
+            ],
+          },
+        },
+      },
+    });
+  });
 });
